@@ -17,11 +17,15 @@ import sys
 # Allow imports from the project root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from dotenv import load_dotenv
+
 from src.agentic_loop import AgentConfig, run_agent
 from src.tools import create_builtin_registry
 
 
 def main() -> None:
+    load_dotenv()
+
     # Build a registry that holds the built-in tools.
     registry = create_builtin_registry()
 

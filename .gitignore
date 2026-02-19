@@ -1,1 +1,5 @@
+# Ignores environment variables
 .env
+
+# Ignores pycache files
+__pycache__/

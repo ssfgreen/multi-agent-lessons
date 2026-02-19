@@ -71,6 +71,9 @@ pip install -r requirements.txt
 export OPENAI_API_KEY="sk-..."
 ```
 
+You can also put keys in a `.env` file; the examples call `load_dotenv()` on
+startup.
+
 ---
 
 ## Running the examples

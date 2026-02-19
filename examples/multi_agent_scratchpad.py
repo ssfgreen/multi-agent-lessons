@@ -41,6 +41,8 @@ import sys
 # Allow imports from the project root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from dotenv import load_dotenv
+
 from src.agentic_loop import AgentConfig, run_agent
 from src.tools import (
     SCRATCHPAD_TOOLS,
@@ -73,6 +75,8 @@ def make_combined_executor(
 
 
 def main() -> None:
+    load_dotenv()
+
     builtin_registry = create_builtin_registry()
 
     # All tools available to agents that need both built-ins and scratchpad.
