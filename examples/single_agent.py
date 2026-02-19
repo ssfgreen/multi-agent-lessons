@@ -2,12 +2,13 @@
 """
 Single Agent Example
 
-Demonstrates the core agentic loop with built-in tools (calculator and clock).
+Demonstrates the core agentic loop with built-in tools (calculator and clock)
+using LiteLLM.
 The agent is given a task that requires multiple tool calls before it can
 produce a final answer.
 
 Run:
-    ANTHROPIC_API_KEY=<key> python examples/single_agent.py
+    OPENAI_API_KEY=<key> python examples/single_agent.py
 """
 
 import os
@@ -16,14 +17,11 @@ import sys
 # Allow imports from the project root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-import anthropic
 from src.agentic_loop import AgentConfig, run_agent
 from src.tools import create_builtin_registry
 
 
 def main() -> None:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-
     # Build a registry that holds the built-in tools.
     registry = create_builtin_registry()
 
@@ -35,7 +33,7 @@ def main() -> None:
             "in your head, even for simple sums. Show your working step by step."
         ),
         tools=registry.get_schemas(),
-        model="claude-opus-4-6",
+        model="gpt-4o-mini",
         max_iterations=10,
         verbose=True,
     )
@@ -46,7 +44,6 @@ def main() -> None:
     )
 
     result = run_agent(
-        client=client,
         config=config,
         initial_message=task,
         tool_executor=registry.execute,

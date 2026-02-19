@@ -23,7 +23,7 @@ from mcp.client.stdio import stdio_client
 
 
 # ---------------------------------------------------------------------------
-# Built-in tool schemas (Anthropic tool format)
+# Built-in tool schemas (Anthropic-style tool format)
 # ---------------------------------------------------------------------------
 
 CALCULATOR_TOOL: dict = {
@@ -153,7 +153,7 @@ class ToolRegistry:
 
         registry = ToolRegistry()
         registry.register(CALCULATOR_TOOL, execute_calculator)
-        schemas = registry.get_schemas()          # pass to client.messages.create
+        schemas = registry.get_schemas()          # pass to run_agent config.tools
         result  = registry.execute("calculator", {"expression": "2+2"})
     """
 

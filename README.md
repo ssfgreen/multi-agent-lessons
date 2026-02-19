@@ -3,6 +3,7 @@
 A minimal, readable implementation of an **agentic loop** that supports tool
 use and a **shared scratchpad** via the
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/).
+The LLM interface is provided by LiteLLM.
 
 ---
 
@@ -17,11 +18,11 @@ User message
      │
      ▼
 ┌──────────────────────────┐
-│  Claude (claude-opus-4-6)│◄──────────────────────┐
+│  LLM via LiteLLM         │◄──────────────────────┐
 └──────────────────────────┘                       │
-         │ stop_reason                             │
-         ├── "end_turn"  ──► return text           │
-         └── "tool_use"  ──► execute tools ────────┘
+         │ response                               │
+         ├── final text ──► return text           │
+         └── tool calls ──► execute tools ────────┘
 ```
 
 ### Shared scratchpad via MCP
@@ -51,7 +52,7 @@ multi-agent-lessons/
 ├── mcp_scratchpad_server.py   # MCP server (scratchpad tools)
 ├── requirements.txt
 ├── src/
-│   ├── agentic_loop.py        # Core loop + pipeline helper
+│   ├── agentic_loop.py        # Core loop + pipeline helper (LiteLLM)
 │   └── tools.py               # Tool schemas, executors, registry, MCP client
 └── examples/
     ├── single_agent.py        # One agent, built-in tools only
@@ -64,7 +65,10 @@ multi-agent-lessons/
 
 ```bash
 pip install -r requirements.txt
-export ANTHROPIC_API_KEY="sk-..."
+
+# Set the API key for the provider you want to use (LiteLLM-compatible).
+# Example for OpenAI:
+export OPENAI_API_KEY="sk-..."
 ```
 
 ---
@@ -118,13 +122,17 @@ testing with any MCP client, or let `MCPToolExecutor` launch it automatically.
 - **`run_agent`** – runs the loop for a single agent.
 - **`run_pipeline`** – convenience wrapper for sequential multi-agent pipelines.
 
+Model selection is driven by `AgentConfig.model` and uses LiteLLM model
+strings (e.g. `gpt-4o-mini`, `anthropic/claude-3-5-sonnet-20240620`, etc.).
+
 ### `src/tools.py`
 
 - **`create_builtin_registry()`** – returns a `ToolRegistry` pre-loaded with
   `calculator` and `get_current_time`.
-- **`SCRATCHPAD_TOOLS`** – list of Anthropic-format tool schemas for the five
+- **`SCRATCHPAD_TOOLS`** – list of Anthropic-style tool schemas for the five
   scratchpad operations.  Pass these to `AgentConfig.tools` to let an agent
-  use the scratchpad.
+  use the scratchpad. They are normalized to OpenAI-style function tools in
+  `run_agent`.
 - **`MCPToolExecutor`** – context manager that launches the MCP server
   subprocess and routes tool calls to it synchronously.
 

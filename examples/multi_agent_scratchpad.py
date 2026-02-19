@@ -32,7 +32,7 @@ Architecture:
     └────────────────────────────────────────────────────────┘
 
 Run:
-    ANTHROPIC_API_KEY=<key> python examples/multi_agent_scratchpad.py
+    OPENAI_API_KEY=<key> python examples/multi_agent_scratchpad.py
 """
 
 import os
@@ -41,7 +41,6 @@ import sys
 # Allow imports from the project root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-import anthropic
 from src.agentic_loop import AgentConfig, run_agent
 from src.tools import (
     SCRATCHPAD_TOOLS,
@@ -74,7 +73,6 @@ def make_combined_executor(
 
 
 def main() -> None:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     builtin_registry = create_builtin_registry()
 
     # All tools available to agents that need both built-ins and scratchpad.
@@ -97,7 +95,7 @@ def main() -> None:
                 "Background, Key Numbers, and Key Insights."
             ),
             tools=all_tools,
-            model="claude-opus-4-6",
+            model="gpt-4o-mini",
             max_iterations=10,
             verbose=True,
         )
@@ -115,7 +113,6 @@ def main() -> None:
         print("STAGE 1: Researcher agent")
         print("=" * 60)
         research_result = run_agent(
-            client=client,
             config=researcher_config,
             initial_message=research_task,
             tool_executor=executor,
@@ -132,7 +129,7 @@ def main() -> None:
                 "the key 'final_report'."
             ),
             tools=SCRATCHPAD_TOOLS,  # Writer only needs the scratchpad
-            model="claude-opus-4-6",
+            model="gpt-4o-mini",
             max_iterations=10,
             verbose=True,
         )
@@ -147,7 +144,6 @@ def main() -> None:
         print("STAGE 2: Writer agent")
         print("=" * 60)
         writer_result = run_agent(
-            client=client,
             config=writer_config,
             initial_message=writer_task,
             tool_executor=executor,
